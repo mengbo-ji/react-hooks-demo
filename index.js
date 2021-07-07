@@ -19,6 +19,8 @@ function schedule () {
 
 // useState 调用的函数
 function dispatchAction (queue, action) {
+  console.log('queue', queue)
+  console.log('action', action)
   const update = {
     action, // 回调
     next: null, // 下一个update
@@ -57,12 +59,11 @@ function useState (initialState) {
     if (!fiber.memoizedState) {
       fiber.memoizedState = hook;
     } else {
-      workInProgressHook.next = hook;
+      workInProgressHook.next = hook; // 引用复制
     }
     // 移动workInProgressHook指针
     workInProgressHook = hook;
   } else {
-    alert('1')
     hook = workInProgressHook;
     // 移动workInProgressHook指针
     workInProgressHook = workInProgressHook.next;
@@ -89,7 +90,6 @@ function useState (initialState) {
 
   // 将update action执行完后的state作为memoizedState
   hook.memoizedState = baseState;
-
   return [baseState, dispatchAction.bind(null, hook.queue)];
 }
 
@@ -99,9 +99,10 @@ function App () {
   const [num1, updateNum1] = useState(100);
   console.log(`${isMount ? 'mount' : 'update'} num: `, num);
   console.log(`${isMount ? 'mount' : 'update'} num1: `, num1);
+
   return {
     click () {
-      updateNum(num => num + 1);
+      updateNum(num => num + 1)
     },
     click1 () {
       updateNum1(num1 => num1 + 10);
@@ -111,5 +112,5 @@ function App () {
 
 window.app = schedule();
 
-console.log('fiber', fiber)
-console.log('hook', workInProgressHook)
+
+// fiber 保存了当前组件的一系列状态 通过大量的链表操作完成
