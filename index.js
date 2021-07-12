@@ -1,4 +1,6 @@
-let workInProgressHook = null; // 保存hooks的无环单链表
+// fiber 保存了当前组件的一系列状态 通过大量的链表操作完成
+
+let workInProgressHook = null; // 指当前工作的hook 
 let isMount = true; // // 首次render时是mount
 
 const fiber = {
@@ -19,8 +21,6 @@ function schedule () {
 
 // useState 调用的函数
 function dispatchAction (queue, action) {
-  console.log('queue', queue)
-  console.log('action', action)
   const update = {
     action, // 回调
     next: null, // 下一个update
@@ -34,6 +34,7 @@ function dispatchAction (queue, action) {
     queue.pending.next = update;
   }
   queue.pending = update;
+  // 模拟react调度
   schedule();
 }
 
@@ -45,7 +46,7 @@ function useState (initialState) {
   let hook = null;
   if (isMount) {
     hook = {
-      // 保存update的queue，即上文介绍的queue
+      // 保存update的queue
       queue: {
         pending: null,
       },
@@ -59,11 +60,13 @@ function useState (initialState) {
     if (!fiber.memoizedState) {
       fiber.memoizedState = hook;
     } else {
-      workInProgressHook.next = hook; // 引用复制
+      workInProgressHook.next = hook; // 引用赋值
     }
+
     // 移动workInProgressHook指针
     workInProgressHook = hook;
   } else {
+    // update的时候 获取上次保存在memoizedState 中的state
     hook = workInProgressHook;
     // 移动workInProgressHook指针
     workInProgressHook = workInProgressHook.next;
@@ -111,6 +114,3 @@ function App () {
 }
 
 window.app = schedule();
-
-
-// fiber 保存了当前组件的一系列状态 通过大量的链表操作完成
