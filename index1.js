@@ -19,7 +19,9 @@ function schedule () {
 function dispatchAction (queue, action) {
   // 创建update
   const update = {
+    // 更新执行的函数
     action,
+    // 与同一个Hook的其他更新形成链表
     next: null,
   }
   // 环状链表处理逻辑 eg: a->a、a->b->a
@@ -44,7 +46,7 @@ function useState(initialState) {
       },
       // 保存useState的状态
       memoizedState: initialState,
-      // 与下一个hook行程单向无环链表
+      // 与下一个hook形成单向无环链表
       next: null
     }
 
