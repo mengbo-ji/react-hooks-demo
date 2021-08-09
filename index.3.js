@@ -92,4 +92,3 @@ function App() {
 }
 
 window.app = schedule();
-
